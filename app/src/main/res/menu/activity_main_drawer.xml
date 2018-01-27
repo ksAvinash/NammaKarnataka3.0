@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/navigation_home"
+            android:icon="@drawable/navigation_home"
+            android:title="Home" />
+
+        <item
+            android:id="@+id/navigation_temple"
+            android:icon="@drawable/navigation_temple"
+            android:title="Temples" />
+
+        <item
+            android:id="@+id/navigation_hillstation"
+            android:icon="@drawable/navigation_hillstation"
+            android:title="Hill Stations" />
+
+        <item
+            android:id="@+id/navigation_waterfall"
+            android:icon="@drawable/navigation_waterfall"
+            android:title="Waterfalls" />
+
+        <item
+            android:id="@+id/navigation_dam"
+            android:icon="@drawable/navigation_dam"
+            android:title="Dams" />
+
+        <item
+            android:id="@+id/navigation_trekking"
+            android:icon="@drawable/navigation_trekking"
+            android:title="Trekking Places" />
+
+        <item
+            android:id="@+id/navigation_beach"
+            android:icon="@drawable/navigation_beach"
+            android:title="Beaches" />
+
+
+        <item
+            android:id="@+id/navigation_heritage"
+            android:icon="@drawable/navigation_heritage"
+            android:title="Heritage" />
+
+
+        <item
+            android:id="@+id/navigation_other"
+            android:icon="@drawable/navigation_other"
+            android:title="Other Places" />
+
+
+        <item
+            android:id="@+id/navigation_district"
+            android:icon="@drawable/navigation_district"
+            android:title="Districts" />
+
+
+        <item
+            android:id="@+id/navigation_maps"
+            android:icon="@drawable/navigation_maps"
+            android:title="MAPS" />
+
+        <item
+            android:id="@+id/navigation_favourite"
+            android:icon="@drawable/navigation_favourite"
+            android:title="FAVOURITES" />
+
+        <item
+            android:id="@+id/navigation_profile"
+            android:icon="@drawable/navigation_profile"
+            android:title="PROFILE" />
+
+
+    </group>
+
+    <group
+        android:id="@+id/bottomPanel"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_add_new_place"
+            android:icon="@drawable/navigation_add_new_place"
+            android:title="Add a new place" />
+
+        <item
+            android:id="@+id/navigation_feedback"
+            android:icon="@drawable/navigation_feedback"
+            android:title="Feedback" />
+    </group>
+
+
+</menu>

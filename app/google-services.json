@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "284063006001",
+    "firebase_url": "https://nammakarnataka-app.firebaseio.com",
+    "project_id": "nammakarnataka-app",
+    "storage_bucket": "nammakarnataka-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:284063006001:android:61384694ba46db13",
+        "android_client_info": {
+          "package_name": "smartAmigos.com.nammakarnataka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "284063006001-8hhsjekc7cngbfjptscfppaptql14622.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "smartAmigos.com.nammakarnataka",
+            "certificate_hash": "e50e8dfbcfa6bc4c9235d46dcbb9c8946ed4077a"
+          }
+        },
+        {
+          "client_id": "284063006001-jtk2gu77982uilbviuj6flm6iva3t3ia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "smartAmigos.com.nammakarnataka",
+            "certificate_hash": "14aa962163f64a4def80d5940b9615d68c53c342"
+          }
+        },
+        {
+          "client_id": "284063006001-89pds471ncbdvq030l8ephpccu1fbi4o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-ZLsg36m3VizGaMvA6d2E37cHddD_nTQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "284063006001-89pds471ncbdvq030l8ephpccu1fbi4o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

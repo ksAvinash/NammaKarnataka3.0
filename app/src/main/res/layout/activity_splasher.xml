@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/signup_background"
+    tools:context="smartAmigos.com.nammakarnataka.SplasherActivity">
+
+    <smartAmigos.com.nammakarnataka.fonts.kaushan_font
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/splasher_nk"
+        android:text="Namma Karnataka"
+        android:textColor="@color/colorWhite"
+        android:textSize="40sp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
+
+    <smartAmigos.com.nammakarnataka.fonts.kaushan_font
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/splasher_slogan"
+        android:text="ನಮ್ಮ ನಾಡು ಕರುನಾಡು"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:layout_below="@+id/splasher_nk"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/avi"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        style="@style/AVLoadingIndicatorView"
+        android:visibility="visible"
+        app:indicatorName="LineScalePulseOutIndicator"
+        android:textColor="@color/colorWhite"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/splasher_slogan"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Karnataka</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_splasher">SplasherActivity</string>
+    <string name="title_activity_google_signin">GoogleSigninActivity</string>
+
+    <string name="fetch_category_places">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/fetch-category-places</string>
+    <string name="validate_username">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/username-validate</string>
+    <string name="app_signup_url">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/user-signup</string>
+    <string name="firebase_id_update">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/firebase-id-update</string>
+    <string name="validate_existing_user">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/validate-existing-user</string>
+
+    <string name="s3_base_url">https://s3.ap-south-1.amazonaws.com/nammakarnataka-images</string>
+    <string name="title_activity_signup">SignupActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
