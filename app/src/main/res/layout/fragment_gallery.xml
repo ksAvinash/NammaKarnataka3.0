@@ -3,26 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="smartAmigos.com.nammakarnataka.PlaceCategoryFragment"
-    android:background="@drawable/app_background"
+    tools:context="smartAmigos.com.nammakarnataka.GalleryFragment"
+    android:background="@drawable/wallpaper1"
     >
     <smartAmigos.com.nammakarnataka.fonts.titles_font
-        android:id="@+id/category_name"
+        android:id="@+id/gallery_placename"
         android:layout_width="wrap_content"
-        android:textAllCaps="true"
-        android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/colorWhite"
         android:padding="12dp"
-        android:textSize="30sp" />
+        android:textColor="#ffffff"
+        android:textSize="28sp" />
 
     <ListView
-        android:id="@+id/places_list"
-        android:layout_below="@+id/category_name"
+        android:divider="@null"
+        android:id="@+id/gallery_imagesList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@null"
-        />
+        android:layout_below="@+id/gallery_placename" />
 
 </RelativeLayout>

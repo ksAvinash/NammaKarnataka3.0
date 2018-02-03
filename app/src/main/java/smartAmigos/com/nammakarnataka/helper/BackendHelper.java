@@ -28,6 +28,8 @@ import static android.content.Context.MODE_PRIVATE;
  */
 
 public class BackendHelper {
+
+
     /*
         THE SIGNUP HELPER CLASS
         1) When invoked used the sharedpreference to get all user's details
@@ -103,19 +105,20 @@ public class BackendHelper {
                 BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String response = serverAnswer.readLine();
-                Log.d("NK_BACKEND", "RESPONSE : "+response);
+                Log.d("NK_BACKEND : SIGNUP : ", "RESPONSE : "+response);
 
                 os.close();
                 conn.disconnect();
 
                 return response;
             }catch (Exception e){
-                Log.d("NK_BACKEND", "Error registering user");
-                Log.d("NK_BACKEND", e.toString());
+                Log.d("NK_BACKEND : SIGNUP : ", "Error registering user");
+                Log.d("NK_BACKEND : SIGNUP : ", e.toString());
             }
             return null;
         }
     }
+
 
 
     /*
@@ -170,20 +173,21 @@ public class BackendHelper {
                 BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String response = serverAnswer.readLine();
-                Log.d("NK_BACKEND", "RESPONSE : "+response);
+                Log.d("NK_BACKEND : USERNAME :", "RESPONSE : "+response);
 
                 os.close();
                 conn.disconnect();
 
                 return response;
             }catch (Exception e){
-                Log.d("NK_BACKEND", "Error validating username");
-                Log.d("NK_BACKEND", e.toString());
+                Log.d("NK_BACKEND : USERNAME :", "Error validating username");
+                Log.d("NK_BACKEND : USERNAME :", e.toString());
             }
             return null;
 
         }
     }
+
 
     /*
     THE VALIDATE_EXISTING_USER CLASS
@@ -191,7 +195,6 @@ public class BackendHelper {
     2) Checks the nk_users table
     3) If user exists --> Intents to Main Activity
     4) Else --> Intents to Signup Activity
-
     */
     public static class validate_existing_user extends AsyncTask<Object, String, String>{
         Context validate_existing_user_context;
@@ -204,9 +207,20 @@ public class BackendHelper {
                     JSONObject object = new JSONObject(str);
                     boolean validate_existing_user = object.getBoolean("validate_existing_user");
                     if(validate_existing_user){
+
+                        JSONObject data = object.getJSONObject("data");
+                        JSONObject item = data.getJSONObject("Item");
+
                         sharedPreferences = validate_existing_user_context.getSharedPreferences("nk", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean("isSignedIn", true);
+                        editor.putString("email", item.getString("email"));
+                        editor.putString("username", item.getString("username"));
+                        editor.putInt("age", item.getInt("age"));
+                        editor.putString("phoneno", item.getString("phoneno"));
+                        editor.putString("district", item.getString("district"));
+                        editor.putString("latitude", item.getString("latitude"));
+                        editor.putString("longitude", item.getString("longitude"));
                         editor.commit();
                         GoogleSigninActivity.callSignupActivity(true);
                     }else{
@@ -245,15 +259,15 @@ public class BackendHelper {
                 BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 String response = serverAnswer.readLine();
-                Log.d("NK_BACKEND", "RESPONSE : "+response);
+                Log.d("NK_BACKEND : VALIDATE :", "RESPONSE : "+response);
 
                 os.close();
                 conn.disconnect();
 
                 return response;
             }catch (Exception e){
-                Log.d("NK_BACKEND", "Error validating user email");
-                Log.d("NK_BACKEND", e.toString());
+                Log.d("NK_BACKEND : VALIDATE :", "Error validating user email");
+                Log.d("NK_BACKEND : VALIDATE :", e.toString());
             }
             return null;
         }
@@ -285,7 +299,7 @@ public class BackendHelper {
                 conn.setDoInput(true);
 
                 String token = FirebaseInstanceId.getInstance().getToken();
-                Log.d("NK_BACKEND", token);
+                Log.d("NK_BACKEND : FIREBASE :", token);
                 JSONObject jsonParam = new JSONObject();
                 jsonParam.put("email", email);
                 jsonParam.put("firebase_id",token);
@@ -295,21 +309,26 @@ public class BackendHelper {
                 os.writeBytes(jsonParam.toString());
                 os.flush();
                 BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                Log.d("NK_BACKEND", "RESPONSE : "+serverAnswer.readLine());
+                Log.d("NK_BACKEND : FIREBASE :", "RESPONSE : "+serverAnswer.readLine());
 
                 os.close();
                 conn.disconnect();
 
                 return serverAnswer.readLine();
             }catch (Exception e){
-                Log.d("NK_BACKEND", "Error updating firebase-id");
-                Log.d("NK_BACKEND", e.toString());
+                Log.d("NK_BACKEND : FIREBASE :", "Error updating firebase-id");
+                Log.d("NK_BACKEND : FIREBASE :", e.toString());
             }
             return null;
         }
     }
 
 
+    /*
+       FETCH PLACES BY CATEGORY
+       - category -- temple, hillstation, beaches, ..etc
+       - category -- all [to fetch all places]
+     */
     public static class fetch_category_places extends AsyncTask<Object, String, String> {
         Context context;
         @Override
@@ -326,13 +345,13 @@ public class BackendHelper {
 
                         for(int i=0; i< data.getInt("Count"); i++){
                             JSONObject current_place = places.getJSONObject(i);
-                            Log.d("NK_BACKEND SQLiteDB ", current_place.getString("category")+" : "+current_place.getString("place_name"));
 
                             SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
                             helper.insertIntoPlace(current_place.getInt("place_id"), current_place.getString("place_name"),
                                     current_place.getString("description"), current_place.getString("district"),
                                     current_place.getString("bestSeason"), current_place.getString("additionalInformation"),
-                                    current_place.getDouble("latitude"), current_place.getDouble("longitude"), current_place.getString("category")
+                                    current_place.getDouble("latitude"), current_place.getDouble("longitude"),
+                                    current_place.getString("category"), current_place.optInt("averageTime"), current_place.optDouble("rating")
                             );
                         }
                         MainActivity.stopProgressDialog();
@@ -379,13 +398,235 @@ public class BackendHelper {
 
                 return serverBuffer.toString();
             } catch (Exception e) {
-                Log.d("NK_BACKEND", "Error updating firebase-id");
-                Log.d("NK_BACKEND", e.toString());
+                Log.d("NK_BACKEND : PLACES :", "Error updating firebase-id");
+                Log.d("NK_BACKEND : PLACES :", e.toString());
             }
             return null;
         }
 
     }
+
+
+
+    /*
+        SAVE USER LOGS TO BACKEND
+        -- Context
+        -- category
+            - visited
+            - rating
+            - averageTime
+            - favourite
+        -- place_id
+        -- value
+            - visited : extrinsic, intrinsic
+            - rating : 1-5
+            - averageTime : Integer {representing minutes}
+            - favourites : " " {blank string}
+
+       1) Fetch the username saved sharedpreferences
+       2) Above are the arguments that has to be passed to this AsyncTask Class
+       3) Push the sent values to backend
+     */
+    public static class user_log extends AsyncTask<Object, String, String>{
+
+        Context context;
+        String category, value;
+        SharedPreferences sharedPreferences;
+        int place_id;
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            context = (Context) objects[0];
+            category = (String) objects[1];
+            place_id = (Integer) objects[2];
+            value = (String) objects[3];
+            SharedPreferences sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+            String username = sharedPreferences.getString("username", "");
+
+            try{
+                URL url = new URL(context.getResources().getString(R.string.user_logs));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+                jsonParam.put("category", category);
+                jsonParam.put("place_id", place_id);
+                jsonParam.put("value", value);
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String response = serverAnswer.readLine();
+                Log.d("NK_BACKEND : USERLOGS :", "RESPONSE : "+response);
+
+                os.close();
+                conn.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("NK_BACKEND : USERLOGS :", "Error pushing user log to backend");
+                Log.d("NK_BACKEND : USERLOGS :", e.toString());
+            }
+
+            return null;
+        }
+    }
+
+
+    public static class fetch_reward_points extends AsyncTask<Context, String, String>{
+
+        Context context;
+        SharedPreferences sharedPreferences;
+
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+
+            if(str != null){
+                try {
+                    JSONObject object = new JSONObject(str);
+                    boolean response = object.getBoolean("fetch_total_points");
+                    if(response){
+                        int total_reward_points = object.getInt("points");
+                        sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt("reward_points", total_reward_points);
+                        editor.commit();
+                    }else{
+                        Log.d("NK_BACKEND : REWARDS : ", "Error fetching total reward points");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        @Override
+        protected String doInBackground(Context... contexts) {
+            context = contexts[0];
+            sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+            String username = sharedPreferences.getString("username", "");
+
+            try{
+                URL url = new URL(context.getResources().getString(R.string.fetch_reward_points));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String response = serverAnswer.readLine();
+                Log.d("NK_BACKEND : REWARDS : ", "RESPONSE : "+response);
+
+                os.close();
+                conn.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("NK_BACKEND : REWARDS : ", "Error fetching total reward points");
+                Log.d("NK_BACKEND : REWARDS : ", e.toString());
+            }
+
+            return null;
+        }
+    }
+
+
+    public static class update_reward_points extends AsyncTask<Object, String, String>{
+
+        Context context;
+        SharedPreferences sharedPreferences;
+        int points;
+
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+
+            if(str != null){
+                try {
+                    JSONObject object = new JSONObject(str);
+                    boolean response = object.getBoolean("update_reward_points");
+                    if(response){
+                        sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+                        int current_points = sharedPreferences.getInt("reward_points", 0);
+
+                        current_points = current_points + points;
+
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt("reward_points", current_points);
+                        editor.commit();
+
+                    }else{
+                        Log.d("NK_BACKEND : REWARDS : ", "Error updating reward points");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            context = (Context) objects[0];
+            points = (Integer) objects[1];
+            sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+            String username = sharedPreferences.getString("username", "");
+            try{
+                URL url = new URL(context.getResources().getString(R.string.update_reward_points));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+                jsonParam.put("points", points);
+
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String response = serverAnswer.readLine();
+                Log.d("NK_BACKEND : REWARDS : ", "RESPONSE : "+response);
+
+                os.close();
+                conn.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("NK_BACKEND : REWARDS : ", "Error updating reward points");
+                Log.d("NK_BACKEND : REWARDS : ", e.toString());
+            }
+            return null;
+        }
+    }
+
 
 
 }

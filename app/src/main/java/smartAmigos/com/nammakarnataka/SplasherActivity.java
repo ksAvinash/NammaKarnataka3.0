@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.gms.ads.MobileAds;
+
 public class SplasherActivity extends AppCompatActivity {
 
     @Override
@@ -17,7 +19,7 @@ public class SplasherActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splasher);
 
-//        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(this, "ca-app-pub-3940256099942544~3347511713");
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("nk", MODE_PRIVATE);

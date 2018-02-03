@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Karnataka</string>
+    <string name="app_name">Namma Karnataka</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -13,11 +13,18 @@
     <string name="app_signup_url">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/user-signup</string>
     <string name="firebase_id_update">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/firebase-id-update</string>
     <string name="validate_existing_user">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/validate-existing-user</string>
+    <string name="user_logs">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/user-logs</string>
+    <string name="fetch_reward_points">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/fetch-total-reward-points</string>
+    <string name="update_reward_points">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/reward-points-update</string>
+    <string name="get_images_by_place_id">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/get-images-by-place-id</string>
 
+    
+    
     <string name="s3_base_url">https://s3.ap-south-1.amazonaws.com/nammakarnataka-images</string>
     <string name="title_activity_signup">SignupActivity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

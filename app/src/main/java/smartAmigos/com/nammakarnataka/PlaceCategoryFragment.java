@@ -80,9 +80,10 @@ public class PlaceCategoryFragment extends Fragment {
                     placesListCursor.getString(5),
                     placesListCursor.getDouble(6),
                     placesListCursor.getDouble(7),
-                    placesListCursor.getString(8)
-
-            ));
+                    placesListCursor.getString(8),
+                    placesListCursor.getInt(9),
+                    placesListCursor.getDouble(10)
+                    ));
         }
 
         displayList();
@@ -94,31 +95,33 @@ public class PlaceCategoryFragment extends Fragment {
     private void displayList() {
         ArrayAdapter<place_general_adapter> adapter = new myPlaceAdapterClass();
         place_list.setAdapter(adapter);
-//        places_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//                try{
-//                    helper = new SQLiteDatabaseHelper(context);
-//                    place_general_adapter current = placeAdapterList.get(position);
-//
-//                    Bundle fragment_agruments = new Bundle();
-//                    fragment_agruments.putInt("id", current.getId());
-//
-//                    PlaceFragment placeFragment = new PlaceFragment();
-//                    placeFragment.setArguments(fragment_agruments);
-//
-//                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.replace(R.id.content_category_activity, placeFragment).commit();
-//
-//                }catch (Exception e){
-//
-//                }
-//
-//            }
-//        });
+        place_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                try{
+                    helper = new SQLiteDatabaseHelper(context);
+                    place_general_adapter current = placesAdapter.get(position);
+
+
+                    PlaceDetails placeDetails = new PlaceDetails();
+                    Bundle fragment_agruments = new Bundle();
+                    fragment_agruments.putInt("id", current.getId());
+
+                    placeDetails.setArguments(fragment_agruments);
+
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_activity_content, placeDetails).commit();
+
+                }catch (Exception e){
+
+                }
+
+            }
+        });
     }
+
 
 
 

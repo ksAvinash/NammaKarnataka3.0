@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -26,6 +26,13 @@ import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.reward.RewardItem;
+import com.google.android.gms.ads.reward.RewardedVideoAdListener;
+import com.google.android.gms.ads.reward.RewardedVideoAd;
+
+import com.sa90.materialarcmenu.ArcMenu;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -35,31 +42,26 @@ import smartAmigos.com.nammakarnataka.helper.BackendHelper;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, RewardedVideoAdListener {
 
     private static ProgressDialog progressDialog;
     SharedPreferences sharedPreferences;
     Context context;
     SliderLayout mDemoSlider;
+    FloatingActionButton fab_temple, fab_hillstation, fab_trekking, fab_waterfall, fab_heritage;
+    ArcMenu arcMenu;
+    private RewardedVideoAd mRewardedVideoAd;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        progressDialog = new ProgressDialog(this);
         context = MainActivity.this;
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        initializeViews();
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,7 +75,28 @@ public class MainActivity extends AppCompatActivity
         fetch_places(false);
 
         setImageSlider();
+
+
     }
+
+
+    public void update_firebase_id(){
+            BackendHelper.firebase_id_update firebaseIdUpdate = new BackendHelper.firebase_id_update();
+            firebaseIdUpdate.execute(context);
+    }
+
+
+    public void initializeViews(){
+        progressDialog = new ProgressDialog(this);
+        arcMenu = findViewById(R.id.arcMenu);
+        fab_temple = findViewById(R.id.fab_temple);
+        fab_hillstation = findViewById(R.id.fab_hillstation);
+        fab_trekking = findViewById(R.id.fab_trekking);
+        fab_waterfall = findViewById(R.id.fab_waterfall);
+        fab_heritage = findViewById(R.id.fab_heritage);
+    }
+
+
 
 
     public void setImageSlider(){
@@ -137,6 +160,9 @@ public class MainActivity extends AppCompatActivity
             boolean fetch_again = get_previous_fetch_history();
 
             if (fetch_again || forcefetch) {
+
+                update_firebase_id();
+
                 progressDialog.setMessage("Fetching places from server..!");
                 progressDialog.setCancelable(false);
                 progressDialog.show();
@@ -150,7 +176,17 @@ public class MainActivity extends AppCompatActivity
 
                 BackendHelper.fetch_category_places fetchCategoryPlaces = new BackendHelper.fetch_category_places();
                 fetchCategoryPlaces.execute(context, "all");
+
+
+                mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(context);
+                mRewardedVideoAd.setRewardedVideoAdListener(this);
+                mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
+                        new AdRequest.Builder().addTestDevice("396E69A18EFF00E534BB4242B6D94316").build());
+
+
             }
+
+
         }
     }
 
@@ -234,7 +270,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_hillstation:
@@ -242,7 +278,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_waterfall:
@@ -250,7 +286,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_dam:
@@ -258,7 +294,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_trekking:
@@ -266,7 +302,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
 
@@ -275,7 +311,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_heritage:
@@ -283,7 +319,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_other:
@@ -291,7 +327,7 @@ public class MainActivity extends AppCompatActivity
                 placeCategoryFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
 
@@ -309,7 +345,7 @@ public class MainActivity extends AppCompatActivity
                 categoriesFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, categoriesFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
                 break;
 
         }
@@ -319,4 +355,112 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void fab_button_click(View view) {
+        arcMenu.toggleMenu();
+        FragmentManager fragmentManager;
+        FragmentTransaction fragmentTransaction;
+        PlaceCategoryFragment placeCategoryFragment = new PlaceCategoryFragment();
+        Bundle fragment_agruments = new Bundle();
+
+        switch (view.getId()) {
+            case R.id.fab_heritage:
+                fragment_agruments.putString("category", "heritage");
+                placeCategoryFragment.setArguments(fragment_agruments);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                break;
+
+            case R.id.fab_waterfall:
+                fragment_agruments.putString("category", "waterfall");
+                placeCategoryFragment.setArguments(fragment_agruments);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                break;
+
+            case R.id.fab_trekking:
+                fragment_agruments.putString("category", "trekking");
+                placeCategoryFragment.setArguments(fragment_agruments);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                break;
+
+            case R.id.fab_hillstation:
+                fragment_agruments.putString("category", "hillstation");
+                placeCategoryFragment.setArguments(fragment_agruments);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                break;
+
+            case R.id.fab_temple:
+                fragment_agruments.putString("category", "temple");
+                placeCategoryFragment.setArguments(fragment_agruments);
+                fragmentManager = getSupportFragmentManager();
+                fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                break;
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void onRewardedVideoAdLoaded() {
+            if(mRewardedVideoAd.isLoaded())
+                mRewardedVideoAd.show();
+    }
+
+    @Override
+    public void onRewardedVideoAdOpened() {
+    }
+
+    @Override
+    public void onRewardedVideoStarted() {
+    }
+
+    @Override
+    public void onRewardedVideoAdClosed() {
+    }
+
+
+    @Override
+    public void onRewarded(RewardItem rewardItem) {
+        if(isNetworkConnected()){
+            BackendHelper.update_reward_points update_reward_points = new BackendHelper.update_reward_points();
+            update_reward_points.execute(context, rewardItem.getAmount());
+        }
+    }
+
+    @Override
+    public void onRewardedVideoAdLeftApplication() {
+    }
+
+    @Override
+    public void onRewardedVideoAdFailedToLoad(int i) {
+    }
+
+
 }

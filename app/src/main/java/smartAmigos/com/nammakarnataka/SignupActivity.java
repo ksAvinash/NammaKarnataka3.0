@@ -170,7 +170,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                         Toast.makeText(context, "Please enable Location",Toast.LENGTH_SHORT).show();
                     }
                 }else {
-                    Toast.makeText(context, "No Internet Connection!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Ohh, No Internet Connection!",Toast.LENGTH_SHORT).show();
                 }
             }
             else {
@@ -191,7 +191,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 }
 
             }else {
-                Toast.makeText(context, "No Internet Connection!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "ohh, No Internet Connection!",Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -222,7 +222,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void getLocationLatLong() {
-        pd.setMessage("Determining your location..");
+        pd.setMessage("One sec, determining your location..");
         pd.setCancelable(false);
         pd.show();
 
@@ -319,6 +319,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     public static void callMainActivity(){
         if(progressDialog.isShowing())
             progressDialog.dismiss();
+
+
 
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
