@@ -9,7 +9,7 @@
     android:paddingLeft="4dp"
     android:paddingRight="4dp"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/wallpaper1"
+    android:background="@drawable/new_app_background"
     >
 
     <ScrollView
@@ -29,7 +29,7 @@
                 android:layout_marginBottom="16dp"
                 app:srcCompat="@drawable/app_icon"/>
 
-            <smartAmigos.com.nammakarnataka.fonts.description_font
+            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
@@ -38,6 +38,7 @@
                 android:padding="12dp"
                 android:drawablePadding="12dp"
                 android:hint="email-id"
+                android:textSize="20sp"
                 android:textColorHint="@color/colorWhite"
                 />
 

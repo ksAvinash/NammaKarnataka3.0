@@ -2,16 +2,21 @@ package smartAmigos.com.nammakarnataka;
 
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,18 +25,23 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.widget.SearchView;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.sa90.materialarcmenu.ArcMenu;
 
 import java.util.Calendar;
@@ -52,6 +62,7 @@ public class MainActivity extends AppCompatActivity
     ArcMenu arcMenu;
     private RewardedVideoAd mRewardedVideoAd;
 
+    InterstitialAd interstitial;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +87,33 @@ public class MainActivity extends AppCompatActivity
 
         setImageSlider();
 
+        showAd(false);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("nk_all_users");
+        Log.d("FIREBASE", "ID : "+ FirebaseInstanceId.getInstance().getToken());
+    }
+
+
+    private void showAd(boolean forceShowAd) {
+        if(Math.random() > 0.90 || forceShowAd) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AdRequest adreq = new AdRequest.Builder().build();
+                    interstitial = new InterstitialAd(getApplicationContext());
+                    interstitial.setAdUnitId(getString(R.string.admob_interstitial_id));
+                    interstitial.loadAd(adreq);
+                    interstitial.setAdListener(new AdListener() {
+                        public void onAdLoaded() {
+
+                            if (interstitial.isLoaded()) {
+                                interstitial.show();
+                            }
+                        }
+                    });
+                }
+            }, 3000);
+        }
     }
 
 
@@ -96,9 +133,7 @@ public class MainActivity extends AppCompatActivity
         fab_heritage = findViewById(R.id.fab_heritage);
     }
 
-
-
-
+    
     public void setImageSlider(){
         new Thread(new Runnable() {
             @Override
@@ -121,16 +156,18 @@ public class MainActivity extends AppCompatActivity
                             .setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
                                 @Override
                                 public void onSliderClick(BaseSliderView slider) {
-//
-//                                    String[] str = name.split(" ");
-//                                    myDBHelper = new DatabaseHelper(getApplicationContext());
-//                                    Cursor cursor = myDBHelper.getPlaceByString(str[0]);
-//
-//                                    Fragment fragment = new SearchResults(cursor);
-//                                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//                                    ft.replace(R.id.content_main, fragment);
-//                                    ft.addToBackStack(null);
-//                                    ft.commit();
+
+                                    String[] str = name.split(" ");
+
+                                    PlacesListFragment placesListFragment = new PlacesListFragment();
+                                    Bundle fragment_agruments = new Bundle();
+
+                                    fragment_agruments.putString("search", str[0]);
+                                    placesListFragment.setArguments(fragment_agruments);
+                                    FragmentManager fragmentManager = getSupportFragmentManager();
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
+
 
                                 }
                             })
@@ -153,7 +190,8 @@ public class MainActivity extends AppCompatActivity
             }
         }).start();
     }
-
+    
+    
     public void fetch_places(boolean forcefetch) {
         if (isNetworkConnected()) {
 
@@ -177,12 +215,14 @@ public class MainActivity extends AppCompatActivity
                 BackendHelper.fetch_category_places fetchCategoryPlaces = new BackendHelper.fetch_category_places();
                 fetchCategoryPlaces.execute(context, "all");
 
-
-                mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(context);
-                mRewardedVideoAd.setRewardedVideoAdListener(this);
-                mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917",
-                        new AdRequest.Builder().addTestDevice("396E69A18EFF00E534BB4242B6D94316").build());
-
+                if(Math.random() > 0.7){
+                    mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(context);
+                    mRewardedVideoAd.setRewardedVideoAdListener(this);
+                    mRewardedVideoAd.loadAd(getString(R.string.admob_reward_videos_id),
+                            new AdRequest.Builder().build());
+                }else{
+                    showAd(true);
+                }
 
             }
 
@@ -190,6 +230,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    
     public static void stopProgressDialog(){
         if(progressDialog.isShowing()){
             progressDialog.dismiss();
@@ -227,35 +268,105 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(arcMenu.isMenuOpened()){
+                arcMenu.toggleMenu();
+            }else{
+                if (getFragmentManager().getBackStackEntryCount() > 0) {
+                    //clear all bitmaps in memory
+
+
+                    getFragmentManager().popBackStack();
+                } else {
+                    super.onBackPressed();
+                }
+            }
         }
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        final SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(
+                new SearchView.OnQueryTextListener(){
+
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        PlacesListFragment placesListFragment = new PlacesListFragment();
+                        Bundle fragment_agruments = new Bundle();
+
+                        fragment_agruments.putString("search", query);
+                        placesListFragment.setArguments(fragment_agruments);
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
+
+
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+
+                        if(newText.length() > 0){
+                            PlacesListFragment placesListFragment = new PlacesListFragment();
+                            Bundle fragment_agruments = new Bundle();
+
+                            fragment_agruments.putString("search", newText);
+                            placesListFragment.setArguments(fragment_agruments);
+                            FragmentManager fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
+                        }
+                        return false;
+                    }
+                }
+        );
         return true;
     }
 
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_refresh:
+                    fetch_places(true);
+                break;
+
+
+            case R.id.action_share:
+                    String str = "https://play.google.com/store/apps/details?id=" + getPackageName();
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT,
+                            "All you need to know about Karnataka\n\nDownload:\n" + str);
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                break;
+        }
 
 
         return super.onOptionsItemSelected(item);
     }
+    
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         FragmentManager fragmentManager;
         FragmentTransaction fragmentTransaction;
-        PlaceCategoryFragment placeCategoryFragment = new PlaceCategoryFragment();
+        PlacesListFragment placesListFragment = new PlacesListFragment();
         Bundle fragment_agruments = new Bundle();
 
         switch(item.getItemId()){
@@ -267,85 +378,93 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.navigation_temple:
                 fragment_agruments.putString("category", "temple");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_hillstation:
                 fragment_agruments.putString("category", "hillstation");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_waterfall:
                 fragment_agruments.putString("category", "waterfall");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_dam:
                 fragment_agruments.putString("category", "dam");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_trekking:
                 fragment_agruments.putString("category", "trekking");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
 
             case R.id.navigation_beach:
                 fragment_agruments.putString("category", "beach");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_heritage:
                 fragment_agruments.putString("category", "heritage");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
             case R.id.navigation_other:
                 fragment_agruments.putString("category", "other");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).addToBackStack(null).commit();
                 break;
 
 
             case R.id.navigation_maps:
-                break;
-
-
-            case R.id.navigation_profile:
+                intent = new Intent(this, MapsActivity.class);
+                startActivity(intent);
                 break;
 
 
             case R.id.navigation_district:
-                CategoriesFragment categoriesFragment = new CategoriesFragment();
-                fragment_agruments.putString("category", "other");
-                categoriesFragment.setArguments(fragment_agruments);
+                DistrictListFragment districtListFragment = new DistrictListFragment();
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).addToBackStack(null).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, districtListFragment).addToBackStack(null).commit();
+                break;
+
+
+            case R.id.navigation_feedback:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("mailto:" + "app.nammakarnataka@gmail.com"));
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Namma Karnataka 3.0 Feedback");
+                startActivity(intent);
+                break;
+
+            case R.id.navigation_profile:
+                intent = new Intent(MainActivity.this, ProfileActivity.class);
+                startActivity(intent);
                 break;
 
         }
@@ -355,53 +474,54 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
+    
+    
     public void fab_button_click(View view) {
         arcMenu.toggleMenu();
         FragmentManager fragmentManager;
         FragmentTransaction fragmentTransaction;
-        PlaceCategoryFragment placeCategoryFragment = new PlaceCategoryFragment();
+        PlacesListFragment placesListFragment = new PlacesListFragment();
         Bundle fragment_agruments = new Bundle();
 
         switch (view.getId()) {
             case R.id.fab_heritage:
                 fragment_agruments.putString("category", "heritage");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
                 break;
 
             case R.id.fab_waterfall:
                 fragment_agruments.putString("category", "waterfall");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
                 break;
 
             case R.id.fab_trekking:
                 fragment_agruments.putString("category", "trekking");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
                 break;
 
             case R.id.fab_hillstation:
                 fragment_agruments.putString("category", "hillstation");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
                 break;
 
             case R.id.fab_temple:
                 fragment_agruments.putString("category", "temple");
-                placeCategoryFragment.setArguments(fragment_agruments);
+                placesListFragment.setArguments(fragment_agruments);
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_activity_content, placeCategoryFragment).commit();
+                fragmentTransaction.replace(R.id.main_activity_content, placesListFragment).commit();
                 break;
 
 
@@ -429,25 +549,31 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRewardedVideoAdLoaded() {
-            if(mRewardedVideoAd.isLoaded())
+        Log.i("REWARD VIDEO : ", "AD LOADED");
+
+        if(mRewardedVideoAd.isLoaded())
                 mRewardedVideoAd.show();
     }
 
     @Override
     public void onRewardedVideoAdOpened() {
+        Log.i("REWARD VIDEO : ", "AD OPENED");
     }
 
     @Override
     public void onRewardedVideoStarted() {
+        Log.i("REWARD VIDEO : ", "STARTED");
     }
 
     @Override
     public void onRewardedVideoAdClosed() {
+        Log.i("REWARD VIDEO : ", "AD CLOSED");
     }
 
 
     @Override
     public void onRewarded(RewardItem rewardItem) {
+        Log.i("REWARD VIDEO : ", "REWARDED : "+ rewardItem.getAmount());
         if(isNetworkConnected()){
             BackendHelper.update_reward_points update_reward_points = new BackendHelper.update_reward_points();
             update_reward_points.execute(context, rewardItem.getAmount());
@@ -456,10 +582,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRewardedVideoAdLeftApplication() {
+        Log.i("REWARD VIDEO : ", "LEFT APPLICATION");
     }
 
     @Override
     public void onRewardedVideoAdFailedToLoad(int i) {
+        Log.i("REWARD VIDEO : ", "FAILED TO LOAD");
     }
 
 

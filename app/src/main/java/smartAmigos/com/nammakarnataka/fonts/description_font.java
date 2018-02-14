@@ -33,7 +33,7 @@ public class description_font extends TextView {
 
     private void init() {
         Typeface tf = Typeface.createFromAsset(getContext().getAssets(),
-                "fonts/Caecilia.otf" );
+                "fonts/MuktaMahee-Regular.ttf" );
         setTypeface(tf);
     }
 

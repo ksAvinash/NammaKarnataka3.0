@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="smartAmigos.com.nammakarnataka.GalleryFragment"
-    android:background="@drawable/wallpaper1"
+    android:background="@drawable/new_app_background"
     >
     <smartAmigos.com.nammakarnataka.fonts.titles_font
         android:id="@+id/gallery_placename"

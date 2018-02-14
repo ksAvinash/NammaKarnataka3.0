@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="smartAmigos.com.nammakarnataka.GoogleSigninActivity"
-    android:background="@drawable/wallpaper1"
+    android:background="@drawable/new_app_background"
     >
 
     <com.google.android.gms.common.SignInButton

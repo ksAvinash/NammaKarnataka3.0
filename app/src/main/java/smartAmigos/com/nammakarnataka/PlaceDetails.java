@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -18,17 +19,35 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.core.ImagePipeline;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import smartAmigos.com.nammakarnataka.helper.BackendHelper;
 import smartAmigos.com.nammakarnataka.helper.CircleProgressBarDrawable;
 import smartAmigos.com.nammakarnataka.helper.SQLiteDatabaseHelper;
+import smartAmigos.com.nammakarnataka.helper.place_images_metadata;
 
 
 /**
@@ -58,6 +77,8 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
     EditText suggestAvgTimeSpent_Value;
     RatingBar suggestRatingsBar;
 
+
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -65,8 +86,10 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         initializeViews();
 
         populateData();
+
         return view;
     }
+
 
     private void populateData() {
         helper = new SQLiteDatabaseHelper(context);
@@ -90,7 +113,7 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
                 place_averageTimeSpent.setText(averageTime+" mins");
 
             if(rating != 0)
-                place_ratings.setText(rating+" /5");
+                place_ratings.setText(rating+"");
 
         }
 
@@ -110,6 +133,7 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         description_textView = view.findViewById(R.id.description_textView);
         bestSeason_textView = view.findViewById(R.id.bestSeason_textView);
         place_averageTimeSpent = view.findViewById(R.id.place_averageTimeSpent);
+
         place_details_fragment_view = view.findViewById(R.id.place_details_fragment_view);
         place_ratings = view.findViewById(R.id.place_ratings);
         additionalInformation_textView = view.findViewById(R.id.additionalInformation_textView);
@@ -131,7 +155,6 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         suggestRatingsBar = view.findViewById(R.id.suggestRatingsBar);
 
 
-
         suggestAvgTimeSpent_Cancel.setOnClickListener(this);
         place_navigate_now.setOnClickListener(this);
         suggestAvgTimeSpent_Button.setOnClickListener(this);
@@ -144,8 +167,6 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         suggestRating_Button.setOnClickListener(this);
 
     }
-
-
 
 
     @Override
@@ -165,10 +186,11 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
                     GalleryFragment galleryFragment = new GalleryFragment();
                     Bundle fragment_agruments = new Bundle();
                     fragment_agruments.putInt("id", place_id);
+                    fragment_agruments.putString("place_name", place_name);
                     galleryFragment.setArguments(fragment_agruments);
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.main_activity_content, galleryFragment).commit();
+                    fragmentTransaction.replace(R.id.main_activity_content, galleryFragment).addToBackStack(null).commit();
                 break;
 
 
@@ -260,10 +282,6 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
     }
-
-
-
-
 
 
 }

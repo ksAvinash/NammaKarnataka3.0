@@ -5,8 +5,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_splasher">SplasherActivity</string>
-    <string name="title_activity_google_signin">GoogleSigninActivity</string>
+    <string name="title_activity_splasher">Splasher</string>
+    <string name="title_activity_google_signin">GoogleSignin</string>
+    <string name="admob_interstitial_id">ca-app-pub-9681985190789334/5716706606</string>
+    <string name="admob_reward_videos_id">ca-app-pub-9681985190789334/1938532745</string>
 
     <string name="fetch_category_places">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/fetch-category-places</string>
     <string name="validate_username">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/username-validate</string>
@@ -17,14 +19,14 @@
     <string name="fetch_reward_points">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/fetch-total-reward-points</string>
     <string name="update_reward_points">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/reward-points-update</string>
     <string name="get_images_by_place_id">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/get-images-by-place-id</string>
-
-    
-    
+    <string name="fetch_place_by_id">https://n1fndrehg4.execute-api.ap-south-1.amazonaws.com/nammakarnataka/fetch-place-by-id</string>
     <string name="s3_base_url">https://s3.ap-south-1.amazonaws.com/nammakarnataka-images</string>
-    <string name="title_activity_signup">SignupActivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+
+    <string name="title_activity_signup">Signup</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_profile"></string>
+    <string name="title_activity_notifications">NotificationsActivity</string>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

@@ -4,8 +4,10 @@
     android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/app_background"
+    android:background="@drawable/new_app_background"
     >
+
+
     <android.support.v7.widget.CardView
         android:id="@+id/suggestRating_Card"
         android:layout_margin="20dp"
@@ -59,8 +61,6 @@
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
-
-
     <android.support.v7.widget.CardView
         android:id="@+id/suggestAvgTimeSpent_Card"
         android:layout_margin="20dp"
@@ -112,6 +112,7 @@
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
+
     <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none"
@@ -146,12 +147,12 @@
 
 
             <android.support.v7.widget.CardView
-                android:layout_margin="1dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 app:cardBackgroundColor="@color/colorWhite"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp">
 
                 <smartAmigos.com.nammakarnataka.fonts.titles_font
                     android:padding="10dp"
@@ -159,7 +160,7 @@
                     android:id="@+id/placename_textView"
                     android:layout_width="wrap_content"
                     android:textAllCaps="true"
-                    android:textSize="26sp"
+                    android:textSize="28sp"
                     android:layout_gravity="center_horizontal"
                     android:textColor="@color/colorPrimaryText"
                     />
@@ -180,7 +181,6 @@
                         android:layout_margin="2dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         app:cardBackgroundColor="@color/colorWhite"
                         app:cardElevation="4dp">
                         <RelativeLayout
@@ -195,12 +195,12 @@
                                 android:layout_margin="4dp"
                                 android:layout_centerHorizontal="true"
                                 />
-                            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                                 android:layout_below="@+id/place_gallery_icon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:text="GALLERY"
+                                android:text="Gallery"
                                 />
                         </RelativeLayout>
                     </android.support.v7.widget.CardView>
@@ -210,7 +210,6 @@
                         android:layout_margin="2dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         app:cardBackgroundColor="@color/colorWhite"
                         app:cardElevation="4dp">
                         <RelativeLayout
@@ -225,7 +224,7 @@
                                 android:layout_margin="4dp"
                                 android:layout_centerHorizontal="true"
                                 />
-                            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                                 android:layout_below="@+id/place_favourite_icon"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -240,7 +239,6 @@
                         android:layout_margin="2dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         app:cardBackgroundColor="@color/colorWhite"
                         app:cardElevation="4dp">
                         <RelativeLayout
@@ -255,12 +253,12 @@
                                 android:layout_margin="4dp"
                                 android:layout_centerHorizontal="true"
                                 />
-                            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                                 android:layout_below="@+id/place_visited_icon"
                                 android:layout_centerHorizontal="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="VISITED"
+                                android:text="Visited"
                                 />
 
                         </RelativeLayout>
@@ -271,7 +269,6 @@
                         android:layout_margin="2dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         app:cardBackgroundColor="@color/colorWhite"
                         app:cardElevation="4dp">
                         <RelativeLayout
@@ -288,7 +285,7 @@
 
                                 />
 
-                            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                                 android:layout_below="@+id/place_averageTimeSpent_icon"
                                 android:layout_centerHorizontal="true"
                                 android:id="@+id/place_averageTimeSpent"
@@ -305,7 +302,6 @@
                         android:layout_margin="2dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         app:cardBackgroundColor="@color/colorWhite"
                         app:cardElevation="4dp">
                         <RelativeLayout
@@ -321,7 +317,7 @@
                                 android:layout_centerHorizontal="true"
                                 />
 
-                            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                            <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                                 android:id="@+id/place_ratings"
                                 android:layout_below="@+id/place_ratings_icon"
                                 android:layout_centerHorizontal="true"
@@ -341,17 +337,18 @@
 
 
             <android.support.v7.widget.CardView
+                android:layout_marginTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@color/colorWhite"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <smartAmigos.com.nammakarnataka.fonts.titles_font
+                    <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
@@ -376,16 +373,16 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 app:cardBackgroundColor="@color/colorWhite"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <smartAmigos.com.nammakarnataka.fonts.titles_font
+                    <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
@@ -409,16 +406,16 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="4dp"
                 app:cardBackgroundColor="@color/colorWhite"
-                app:cardElevation="4dp">
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <smartAmigos.com.nammakarnataka.fonts.titles_font
+                    <smartAmigos.com.nammakarnataka.fonts.description_font_bold
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="5dp"

@@ -20,6 +20,7 @@ import smartAmigos.com.nammakarnataka.GoogleSigninActivity;
 import smartAmigos.com.nammakarnataka.MainActivity;
 import smartAmigos.com.nammakarnataka.R;
 import smartAmigos.com.nammakarnataka.SignupActivity;
+import smartAmigos.com.nammakarnataka.firebase.FirebaseMessagingService;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -628,5 +629,79 @@ public class BackendHelper {
     }
 
 
+    public static class fetch_place_by_id extends AsyncTask<Object, String, String>{
+        Context context;
+
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+
+
+            if(str != null){
+                try {
+                    JSONObject object = new JSONObject(str);
+                    boolean response = object.getBoolean("fetch_place_by_id");
+                    if(response){
+                        JSONObject data = object.getJSONObject("data");
+                        JSONObject Item = data.getJSONObject("Item");
+
+
+                        SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
+                            helper.insertIntoPlace(Item.getInt("place_id"), Item.getString("place_name"),
+                                    Item.getString("description"), Item.getString("district"),
+                                    Item.getString("bestSeason"), Item.getString("additionalInformation"),
+                                    Item.getDouble("latitude"), Item.getDouble("longitude"),
+                                    Item.getString("category"), Item.optInt("averageTime"), Item.optDouble("rating")
+                            );
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            context = (Context) objects[0];
+            int place_id = (Integer) objects[1];
+            try {
+                URL url = new URL(context.getResources().getString(R.string.fetch_place_by_id));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("place_id", place_id);
+
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder serverBuffer = new StringBuilder();
+                String server_response = "";
+                while ((server_response = bufferedReader.readLine()) != null) {
+                    serverBuffer.append(server_response);
+                }
+
+                Log.d("NK_BACKEND", "RESPONSE : " + serverBuffer.toString());
+
+                os.close();
+                conn.disconnect();
+
+                return serverBuffer.toString();
+            } catch (Exception e) {
+                Log.d("NK_BACKEND : PLACES :", "Error updating firebase-id");
+                Log.d("NK_BACKEND : PLACES :", e.toString());
+            }
+
+            return null;
+        }
+    }
 
 }

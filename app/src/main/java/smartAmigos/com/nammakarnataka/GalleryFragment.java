@@ -1,11 +1,13 @@
 package smartAmigos.com.nammakarnataka;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,9 +18,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.facebook.common.memory.MemoryTrimType;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,38 +46,65 @@ import smartAmigos.com.nammakarnataka.helper.place_images_metadata;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GalleryFragment extends Fragment {
+public class GalleryFragment extends Fragment implements com.facebook.common.disk.DiskTrimmable,
+        com.facebook.common.memory.MemoryTrimmable{
 
 
     public GalleryFragment() {
         // Required empty public constructor
     }
     int place_id;
+    String place_name;
     View view;
     Context context;
     ListView gallery_imagesList;
     TextView gallery_placename;
+    ProgressDialog progressDialog;
 
     List<place_images_metadata> galleryAdapter = new ArrayList<>();
 
-
+    InterstitialAd interstitial;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_gallery, container, false);
+
         initializeViews();
 
-
+        showAd();
         return view;
     }
 
+
+    private void showAd() {
+        if(Math.random() > 0.9) {
+                AdRequest adreq = new AdRequest.Builder().build();
+                interstitial = new InterstitialAd(getActivity().getApplicationContext());
+                interstitial.setAdUnitId(getString(R.string.admob_interstitial_id));
+                interstitial.loadAd(adreq);
+                interstitial.setAdListener(new AdListener() {
+                    public void onAdLoaded() {
+                        if (interstitial.isLoaded()) {
+                            interstitial.show();
+                        }
+                    }
+                });
+
+        }
+    }
+
     private void initializeViews(){
-        context = getActivity().getApplicationContext();
+        context = getActivity().getBaseContext();
+
+        progressDialog = new ProgressDialog(getActivity());
 
         gallery_imagesList = view.findViewById(R.id.gallery_imagesList);
+        gallery_placename = view.findViewById(R.id.gallery_placename);
 
         Bundle bundle = this.getArguments();
         place_id = bundle.getInt("id", 0);
+        place_name = bundle.getString("place_name", "");
+        gallery_placename.setText(place_name);
 
         if(isNetworkConnected()){
             new get_images_by_place_id().execute(place_id);
@@ -80,16 +113,10 @@ public class GalleryFragment extends Fragment {
     }
 
 
-
-
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         return cm.getActiveNetworkInfo() != null;
     }
-
-
-
-
 
 
     private void displayImages(){
@@ -97,8 +124,26 @@ public class GalleryFragment extends Fragment {
         gallery_imagesList.setAdapter(adapter);
     }
 
+    @Override
+    public void trimToMinimum() {
+        Log.i("FACEBOOK FRESCO : ", "DISC : TRIM TO MIN");
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        imagePipeline.clearDiskCaches();
+    }
 
+    @Override
+    public void trimToNothing() {
+        Log.i("FACEBOOK FRESCO : ", "DISC : TRIM TO NOTHING");
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        imagePipeline.clearCaches();
+    }
 
+    @Override
+    public void trim(MemoryTrimType trimType) {
+        Log.i("FACEBOOK FRESCO : ", "MEMORY TRIM");
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        imagePipeline.clearMemoryCaches();
+    }
 
 
     public class galleryAdapterList extends ArrayAdapter<place_images_metadata> {
@@ -132,11 +177,26 @@ public class GalleryFragment extends Fragment {
 
     }
 
+
     public class get_images_by_place_id extends AsyncTask<Integer, String, String> {
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            progressDialog.setMessage("One sec, Searching relevant images..");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
 
         @Override
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
+
+            if(progressDialog.isShowing())
+                progressDialog.dismiss();
+
 
             if(str!=null){
                 try {
