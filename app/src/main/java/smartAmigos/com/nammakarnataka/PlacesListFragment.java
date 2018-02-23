@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.facebook.common.memory.MemoryTrimType;
@@ -73,6 +74,7 @@ public class PlacesListFragment extends Fragment implements
         String search = bundle.getString("search", "");
         String district = bundle.getString("district", "");
 
+        placesAdapter.clear();
 
         place_list = view.findViewById(R.id.places_list);
         context = getActivity().getApplicationContext();
@@ -90,8 +92,8 @@ public class PlacesListFragment extends Fragment implements
             placesListCursor = helper.getPlaceByDistrict(district);
 
         }else {
-            category_name.setText(category+"S");
-            placesListCursor = helper.getAllPlacesByCategory(category);
+            category_name.setText(category);
+            placesListCursor = helper.getAllPlacesByCategory(category, "name");
 
         }
 
@@ -194,6 +196,12 @@ public class PlacesListFragment extends Fragment implements
 
             TextView t_district = itemView.findViewById(R.id.place_list_districtname);
             t_district.setText(current.getDistrict());
+
+            RatingBar t_ratingsbar = itemView.findViewById(R.id.place_list_ratingsbar);
+            t_ratingsbar.setRating(Float.valueOf(String.valueOf(current.getRating())));
+
+            TextView place_list_rating_value = itemView.findViewById(R.id.place_list_rating_value);
+            place_list_rating_value.setText(current.getRating()+"");
 
             String head_image = getResources().getString(R.string.s3_base_url)+"/"+category+"/"+current.getId()+"/head.jpg";
             Uri uri = Uri.parse(head_image);

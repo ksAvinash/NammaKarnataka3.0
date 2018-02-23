@@ -9,8 +9,8 @@ android {
         applicationId "smartAmigos.com.nammakarnataka"
         minSdkVersion 15
         targetSdkVersion 27
-        versionCode 1
-        versionName "3.0"
+        versionCode 26
+        versionName "3.01"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -43,15 +43,13 @@ dependencies {
     //image downloader library
     compile 'com.facebook.fresco:fresco:1.7.1'
 
-    //main activity slider libraries ---
-    compile 'com.daimajia.slider:library:1.1.5@aar'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.nineoldandroids:library:2.4.0'
+
+    compile 'com.airbnb.android:lottie:2.5.0-rc1'
 
     compile 'org.jetbrains:annotations-java5:15.0'
 
-    //floating fab library
-    compile 'com.sa90.materialarcmenu:library:1.5.0'
+    //circluar progress bar
+    compile 'me.tankery.lib:circularSeekBar:1.1.4'
 
     //firebase ads
     compile 'com.google.firebase:firebase-ads:11.8.0'

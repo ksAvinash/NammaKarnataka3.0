@@ -13,7 +13,9 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,11 +43,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     static Context context;
     Button signup_button;
     TextView signup_email;
-    EditText signup_username, signup_age, signup_phoneno;
+    EditText signup_username, signup_age;
     ImageView signup_male, signup_female;
     static View view;
     ProgressDialog pd;
-    static String username, phoneno, email, district, gender;
+    static String username, email, district, gender;
     static int age;
     static ProgressDialog progressDialog;
 
@@ -53,8 +57,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_signup);
         initializeViews();
 
-        update_firebase_id();
-
     }
     public void initializeViews()
     {
@@ -62,7 +64,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         signup_username = findViewById(R.id.signup_username);
         signup_age = findViewById(R.id.signup_age);
         signup_email = findViewById(R.id.signup_email);
-        signup_phoneno = findViewById(R.id.signup_phoneno);
         signup_male = findViewById(R.id.signup_male);
         signup_female = findViewById(R.id.signup_female);
         view = findViewById(android.R.id.content);
@@ -81,12 +82,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    public void update_firebase_id(){
-        if(isNetworkConnected()){
-            BackendHelper.firebase_id_update firebaseIdUpdate = new BackendHelper.firebase_id_update();
-            firebaseIdUpdate.execute(context);
-        }
-    }
+
 
     private boolean isNetworkConnected() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -122,8 +118,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         username = signup_username.getText().toString();
         email = signup_email.getText().toString();
-        phoneno = signup_phoneno.getText().toString();
-        String s_age = signup_age.getText().toString();
+        String s_age = "0";
+        if(signup_age.getText() != null){
+            s_age = signup_age.getText().toString();
+        }
 
         if(s_age.length() > 0){
             age = Integer.parseInt(s_age);
@@ -141,14 +139,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         }else if(username.length() > 12){
             Snackbar.make(view,"Max 12 letters in Username is allowed", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
-        }else if(phoneno.length() != 10){
-            Snackbar.make(view,"Invalid Phone number", Snackbar.LENGTH_SHORT)
-                    .setAction("Action", null).show();
         }else if(gender == null){
             Snackbar.make(view,"Please pick your GENDER", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         }else if(!username.matches("[a-z0-9_]*")){
-            Snackbar.make(view,"USERNAME Invalid, only small characters and '_' can be used", Snackbar.LENGTH_SHORT)
+            Snackbar.make(view,"USERNAME Invalid, only small characters, numbers and '_' can be used", Snackbar.LENGTH_SHORT)
                     .setAction("Action", null).show();
         }else{
             getUserLocation();
@@ -174,12 +169,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
             else {
-                Toast.makeText(context, "Enable Location permissions!",Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getApplication().getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
+                ActivityCompat.requestPermissions(SignupActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 909);
             }
         }else{
             if(isNetworkConnected()){
@@ -197,6 +188,34 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode){
+
+            case 909:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    if(isNetworkConnected()){
+
+                        if(isLocationEnabled(context)){
+                            getLocationLatLong();
+                        }else {
+                            Toast.makeText(context, "Please enable Location",Toast.LENGTH_SHORT).show();
+                        }
+                    }else {
+                        Toast.makeText(context, "Ohh, No Internet Connection!",Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(SignupActivity.this, "Permission denied to access location ", Toast.LENGTH_SHORT).show();
+                }
+            break;
+        }
+
+    }
 
     public static boolean isLocationEnabled(Context context) {
         int locationMode = 0;
@@ -298,7 +317,6 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
             SharedPreferences sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("username",username);
-            editor.putString("phoneno", phoneno);
             editor.putString("district", district);
             editor.putInt("age", age);
             editor.putString("gender", gender);
@@ -320,11 +338,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         if(progressDialog.isShowing())
             progressDialog.dismiss();
 
-
-
         Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
+
     }
 
 

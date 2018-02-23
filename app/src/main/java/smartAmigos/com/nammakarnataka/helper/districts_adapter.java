@@ -5,7 +5,7 @@ package smartAmigos.com.nammakarnataka.helper;
  */
 
 public class districts_adapter {
-    String district;
+    private String district;
 
     public void setDistrict(String district) {
         this.district = district;

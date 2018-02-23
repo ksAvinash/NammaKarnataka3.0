@@ -16,7 +16,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "nk_database";
     private static final String TABLE_PLACES = "nk_places";
-    private static final String TABLE_FAVOURITE = "nk_fav";
+    private static final String TABLE_BUCKETLIST = "nk_bucketlist";
     private static final String TABLE_VISITED = "nk_visited";
     private static final String TABLE_RATED_PLACES = "nk_rated_places";
 
@@ -55,7 +55,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(create_place_table);
 
         String create_favourite_table = "create table "
-                +TABLE_FAVOURITE+" ("+PLACE_ID+" integer primary key);";
+                +TABLE_BUCKETLIST+" ("+PLACE_ID+" integer primary key);";
         db.execSQL(create_favourite_table);
 
         String create_visited_table = "create table "
@@ -66,15 +66,12 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
                 +TABLE_RATED_PLACES+" ("+PLACE_ID+" integer primary key);";
         db.execSQL(create_places_rated_table);
 
-
-
-
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("drop table if exists "+TABLE_PLACES);
-        db.execSQL("drop table if exists "+TABLE_FAVOURITE);
+        db.execSQL("drop table if exists "+TABLE_BUCKETLIST);
         db.execSQL("drop table if exists "+TABLE_VISITED);
         db.execSQL("drop table if exists "+TABLE_RATED_PLACES);
 
@@ -113,12 +110,41 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_PLACES, null, contentValues);
     }
 
-    public void insertIntoFavourites(int id){
+
+    public void updatePlace(int id, String name, String description,
+                                String district, String bestseason,
+                                String additionalInfo,
+                                double latitude,
+                                double longitude,
+                                String category,
+                                int avgTimeSpent,
+                                double rating){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(PLACE_ID, id);
-        db.insert(TABLE_FAVOURITE, null, contentValues);
+        contentValues.put(PLACE_NAME, name);
+        contentValues.put(PLACE_DESCRIPTION, description);
+        contentValues.put(PLACE_DISTRICT, district);
+        contentValues.put(PLACE_BESTSEASON, bestseason);
+        contentValues.put(PLACE_ADDITIONALINFO, additionalInfo);
+        contentValues.put(PLACE_LATITUDE, latitude);
+        contentValues.put(PLACE_LONGITUDE, longitude);
+        contentValues.put(PLACE_CATEGORY, category);
+        contentValues.put(PLACE_AVGTIMESPENT, avgTimeSpent);
+        contentValues.put(PLACE_RATING, rating);
+
+        db.update(TABLE_PLACES, contentValues, null, null);
+    }
+
+
+
+    public void insertIntoBucketList(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(PLACE_ID, id);
+        db.insert(TABLE_BUCKETLIST, null, contentValues);
     }
 
     public void insertIntoVisited(int id){
@@ -137,9 +163,9 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_RATED_PLACES, null, contentValues);
     }
 
-    public Cursor getAllPlacesByCategory(String category){
+    public Cursor getAllPlacesByCategory(String category, String order_by){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.rawQuery("select * from "+TABLE_PLACES+" where "+PLACE_CATEGORY+" = '"+category +"';",null);
+        return db.rawQuery("select * from "+TABLE_PLACES+" where "+PLACE_CATEGORY+" = '"+category +"' order by "+order_by+";",null);
     }
 
 
@@ -163,7 +189,7 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
 
     public boolean checkIfFavourited(int id){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select count(*) from "+TABLE_FAVOURITE+" where "+PLACE_ID+" = "+id+";",null);
+        Cursor cursor = db.rawQuery("select count(*) from "+TABLE_BUCKETLIST+" where "+PLACE_ID+" = "+id+";",null);
         cursor.moveToNext();
         int count = cursor.getInt(0);
         cursor.close();
@@ -194,6 +220,34 @@ public class SQLiteDatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery("select distinct "+PLACE_DISTRICT+" from "+TABLE_PLACES+" order by "+PLACE_DISTRICT+" ;",null);
     }
 
+
+    public int getCountOfVisited(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor =  db.rawQuery("select count(*) from "+TABLE_VISITED+";",null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();;
+        return count;
+    }
+
+
+    public int getCountOfBucketList(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor =  db.rawQuery("select count(*) from "+TABLE_BUCKETLIST+";",null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
+    }
+
+    public int getCountOfPlaces(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor =  db.rawQuery("select count(*) from "+TABLE_PLACES+";",null);
+        cursor.moveToFirst();
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count;
+    }
 
 
 }

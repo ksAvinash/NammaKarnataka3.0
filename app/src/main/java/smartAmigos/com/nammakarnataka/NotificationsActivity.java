@@ -74,7 +74,7 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
 
 
     private void showAd(){
-        if(Math.random() > 0.7) {
+        if(Math.random() > 0.25) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -91,7 +91,7 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
                         }
                     });
                 }
-            }, 2000);
+            }, 1000);
         }
     }
 
@@ -256,10 +256,10 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
                 break;
 
             case R.id.notification_place_favourite_card:
-                    Snackbar.make(view, "Nice, added " + place_name + " to Favourites list", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(view, "Nice, added " + place_name + " to your Bucket List", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                     if(!helper.checkIfFavourited(place_id)) {
-                        helper.insertIntoFavourites(place_id);
+                        helper.insertIntoBucketList(place_id);
 
                         user_log = new BackendHelper.user_log();
                         user_log.execute(context, "favourite", place_id, " ");

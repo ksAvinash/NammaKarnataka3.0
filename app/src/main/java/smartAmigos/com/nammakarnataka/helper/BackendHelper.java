@@ -17,12 +17,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import smartAmigos.com.nammakarnataka.GoogleSigninActivity;
-import smartAmigos.com.nammakarnataka.MainActivity;
 import smartAmigos.com.nammakarnataka.R;
 import smartAmigos.com.nammakarnataka.SignupActivity;
-import smartAmigos.com.nammakarnataka.firebase.FirebaseMessagingService;
 
 import static android.content.Context.MODE_PRIVATE;
+
+
 
 /**
  * Created by avinashk on 05/01/18.
@@ -56,7 +56,7 @@ public class BackendHelper {
                         sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean("isSignedIn", true);
-                        editor.commit();
+                        editor.apply();
 
                         SignupActivity.callMainActivity();
                     }
@@ -75,7 +75,6 @@ public class BackendHelper {
             String username = sharedPreferences.getString("username", "");
             String gender = sharedPreferences.getString("gender", "M");
             int age = sharedPreferences.getInt("age",20);
-            String phoneno = sharedPreferences.getString("phoneno", "");
             String latitude = sharedPreferences.getString("latitude","0.00");
             String longitude = sharedPreferences.getString("longitude","0.00");
             String district = sharedPreferences.getString("district", "");
@@ -94,7 +93,6 @@ public class BackendHelper {
                 jsonParam.put("username", username);
                 jsonParam.put("gender", gender);
                 jsonParam.put("age", age);
-                jsonParam.put("phoneno", phoneno);
                 jsonParam.put("latitude", latitude);
                 jsonParam.put("longitude", longitude);
                 jsonParam.put("district", district);
@@ -218,11 +216,11 @@ public class BackendHelper {
                         editor.putString("email", item.getString("email"));
                         editor.putString("username", item.getString("username"));
                         editor.putInt("age", item.getInt("age"));
-                        editor.putString("phoneno", item.getString("phoneno"));
                         editor.putString("district", item.getString("district"));
                         editor.putString("latitude", item.getString("latitude"));
                         editor.putString("longitude", item.getString("longitude"));
                         editor.commit();
+
                         GoogleSigninActivity.callSignupActivity(true);
                     }else{
                         GoogleSigninActivity.callSignupActivity(false);
@@ -333,33 +331,38 @@ public class BackendHelper {
     public static class fetch_category_places extends AsyncTask<Object, String, String> {
         Context context;
         @Override
-        protected void onPostExecute(String str) {
+        protected void onPostExecute(final String str) {
             super.onPostExecute(str);
 
             if(str != null){
-                try {
-                    JSONObject object = new JSONObject(str);
-                    boolean response = object.getBoolean("fetch_category_places");
-                    if(response){
-                        JSONObject data = object.getJSONObject("data");
-                        JSONArray places = data.getJSONArray("Items");
 
-                        for(int i=0; i< data.getInt("Count"); i++){
-                            JSONObject current_place = places.getJSONObject(i);
-
-                            SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
-                            helper.insertIntoPlace(current_place.getInt("place_id"), current_place.getString("place_name"),
-                                    current_place.getString("description"), current_place.getString("district"),
-                                    current_place.getString("bestSeason"), current_place.getString("additionalInformation"),
-                                    current_place.getDouble("latitude"), current_place.getDouble("longitude"),
-                                    current_place.getString("category"), current_place.optInt("averageTime"), current_place.optDouble("rating")
-                            );
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject object = new JSONObject(str);
+                            boolean response = object.getBoolean("fetch_category_places");
+                            if(response){
+                                JSONObject data = object.getJSONObject("data");
+                                JSONArray places = data.getJSONArray("Items");
+                                SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
+                                for(int i=0; i< data.getInt("Count"); i++){
+                                    JSONObject current_place = places.getJSONObject(i);
+                                    helper.insertIntoPlace(current_place.getInt("place_id"), current_place.getString("place_name"),
+                                            current_place.getString("description"), current_place.getString("district"),
+                                            current_place.getString("bestSeason"), current_place.getString("additionalInformation"),
+                                            current_place.getDouble("latitude"), current_place.getDouble("longitude"),
+                                            current_place.getString("category"), current_place.optInt("averageTime"), current_place.optDouble("rating")
+                                    );
+                                }
+                                helper.close();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        MainActivity.stopProgressDialog();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }).start();
+
 
             }
         }
@@ -422,7 +425,7 @@ public class BackendHelper {
             - visited : extrinsic, intrinsic
             - rating : 1-5
             - averageTime : Integer {representing minutes}
-            - favourites : " " {blank string}
+            - bucketlist : " " {blank string}
 
        1) Fetch the username saved sharedpreferences
        2) Above are the arguments that has to be passed to this AsyncTask Class
@@ -499,7 +502,7 @@ public class BackendHelper {
                         sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putInt("reward_points", total_reward_points);
-                        editor.commit();
+                        editor.apply();
                     }else{
                         Log.d("NK_BACKEND : REWARDS : ", "Error fetching total reward points");
                     }
@@ -552,6 +555,94 @@ public class BackendHelper {
     }
 
 
+    public static class fetch_user_logs extends AsyncTask<Context, String, String>{
+
+        Context context;
+        SharedPreferences sharedPreferences;
+
+        @Override
+        protected void onPostExecute(final String str) {
+            super.onPostExecute(str);
+
+            if(str != null){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject object = new JSONObject(str);
+                            boolean response = object.getBoolean("fetch_user_logs");
+                            if(response){
+                                JSONObject data = object.getJSONObject("data");
+                                JSONArray user_logs = data.getJSONArray("Items");
+                                SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
+                                for(int i=0; i< data.getInt("Count"); i++){
+                                    JSONObject log = user_logs.getJSONObject(i);
+                                    switch (log.getString("category")){
+                                        case "bucketlist":
+                                                helper.insertIntoBucketList(log.getInt("place_id"));
+                                            break;
+
+                                        case "visited":
+                                                helper.insertIntoVisited(log.getInt("place_id"));
+                                            break;
+                                    }
+                                }
+
+
+                            }else{
+                                Log.d("NK_BACKEND : USER LOG: ", "Error fetching logs");
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+            }
+        }
+
+        @Override
+        protected String doInBackground(Context... contexts) {
+            context = contexts[0];
+            sharedPreferences = context.getSharedPreferences("nk", MODE_PRIVATE);
+            String username = sharedPreferences.getString("username", "");
+
+            try{
+                URL url = new URL(context.getResources().getString(R.string.fetch_user_logs));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("username", username);
+
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String response = serverAnswer.readLine();
+                Log.d("NK_BACKEND : USER LOG: ", "RESPONSE : "+response);
+
+                os.close();
+                conn.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("NK_BACKEND : USER LOG: ", "Error fetching user logs");
+                Log.d("NK_BACKEND : USER LOG: ", e.toString());
+            }
+
+            return null;
+        }
+    }
+
+
     public static class update_reward_points extends AsyncTask<Object, String, String>{
 
         Context context;
@@ -574,7 +665,7 @@ public class BackendHelper {
 
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putInt("reward_points", current_points);
-                        editor.commit();
+                        editor.apply();
 
                     }else{
                         Log.d("NK_BACKEND : REWARDS : ", "Error updating reward points");
@@ -633,31 +724,37 @@ public class BackendHelper {
         Context context;
 
         @Override
-        protected void onPostExecute(String str) {
+        protected void onPostExecute(final String str) {
             super.onPostExecute(str);
 
 
             if(str != null){
-                try {
-                    JSONObject object = new JSONObject(str);
-                    boolean response = object.getBoolean("fetch_place_by_id");
-                    if(response){
-                        JSONObject data = object.getJSONObject("data");
-                        JSONObject Item = data.getJSONObject("Item");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject object = new JSONObject(str);
+                            boolean response = object.getBoolean("fetch_place_by_id");
+                            if(response){
+                                JSONObject data = object.getJSONObject("data");
+                                JSONObject Item = data.getJSONObject("Item");
 
 
-                        SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
-                            helper.insertIntoPlace(Item.getInt("place_id"), Item.getString("place_name"),
-                                    Item.getString("description"), Item.getString("district"),
-                                    Item.getString("bestSeason"), Item.getString("additionalInformation"),
-                                    Item.getDouble("latitude"), Item.getDouble("longitude"),
-                                    Item.getString("category"), Item.optInt("averageTime"), Item.optDouble("rating")
-                            );
+                                SQLiteDatabaseHelper helper = new SQLiteDatabaseHelper(context);
+                                helper.updatePlace(Item.getInt("place_id"), Item.getString("place_name"),
+                                        Item.getString("description"), Item.getString("district"),
+                                        Item.getString("bestSeason"), Item.getString("additionalInformation"),
+                                        Item.getDouble("latitude"), Item.getDouble("longitude"),
+                                        Item.getString("category"), Item.optInt("averageTime"), Item.optDouble("rating")
+                                );
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }).start();
 
             }
         }
@@ -703,5 +800,10 @@ public class BackendHelper {
             return null;
         }
     }
+
+
+
+
+
 
 }

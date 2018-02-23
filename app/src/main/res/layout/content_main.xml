@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,41 +13,4 @@
     >
 
 
-    <smartAmigos.com.nammakarnataka.fonts.titles_font
-        android:layout_marginBottom="16dp"
-        android:layout_above="@+id/mainActivitySlider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="FEATURED PLACES"
-        android:textColor="@color/colorWhite"
-        android:textSize="26sp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="#212121"
-        android:id="@+id/start_slider"
-        android:layout_above="@+id/mainActivitySlider"
-        android:orientation="vertical" />
-
-    <com.daimajia.slider.library.SliderLayout
-        android:id="@+id/mainActivitySlider"
-        android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:background="@color/colorSecondaryText"
-        android:layout_centerInParent="true"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:background="#212121"
-        android:layout_below="@+id/mainActivitySlider"
-        android:orientation="vertical" />
-
-
-
-
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

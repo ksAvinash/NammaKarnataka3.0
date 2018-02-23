@@ -92,6 +92,10 @@ public class GoogleSigninActivity extends AppCompatActivity implements GoogleApi
             BackendHelper.fetch_reward_points fetch_reward_points = new BackendHelper.fetch_reward_points();
             fetch_reward_points.execute(context);
 
+            BackendHelper.fetch_user_logs fetch_user_logs = new BackendHelper.fetch_user_logs();
+            fetch_user_logs.execute(context);
+
+
             Intent intent = new Intent(context, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             context.startActivity(intent);

@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void addMarkers(){
 
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("temple");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("temple", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -80,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(district)
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_temple"))));
         }
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("dam");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("dam", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -89,7 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(district)
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_dam"))));
         }
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("trekking");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("trekking", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -98,7 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(district)
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_trekking"))));
         }
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("hillstation");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("hillstation", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -108,7 +108,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_hillstation"))));
         }
 
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("waterfall");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("waterfall", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -117,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(district)
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_waterfall"))));
         }
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("beach");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("beach", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);
@@ -126,7 +126,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .snippet(district)
                     .icon(BitmapDescriptorFactory.fromBitmap(resizeMapIcons("maps_beach"))));
         }
-        PlaceCursor = myDBHelper.getAllPlacesByCategory("heritage");
+        PlaceCursor = myDBHelper.getAllPlacesByCategory("heritage", "name");
         while (PlaceCursor.moveToNext()){
             LatLng place = new LatLng(PlaceCursor.getDouble(6), PlaceCursor.getDouble(7));
             String district = PlaceCursor.getString(3);

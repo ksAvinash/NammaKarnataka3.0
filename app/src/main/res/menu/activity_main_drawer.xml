@@ -63,16 +63,6 @@
             android:icon="@drawable/navigation_maps"
             android:title="MAPS" />
 
-        <!--<item-->
-            <!--android:id="@+id/navigation_favourite"-->
-            <!--android:icon="@drawable/navigation_favourite"-->
-            <!--android:title="FAVOURITES" />-->
-
-        <item
-            android:id="@+id/navigation_profile"
-            android:icon="@drawable/navigation_profile"
-            android:title="PROFILE" />
-
 
     </group>
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,22 +15,19 @@
         app:cardBackgroundColor="@color/colorWhite"
         app:cardElevation="12dp">
 
-        <LinearLayout
-            android:padding="2dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
             <com.facebook.drawee.view.SimpleDraweeView
-                android:padding="1dp"
+                android:padding="2dp"
                 android:id="@+id/place_list_image"
                 fresco:roundingBorderColor="#a2be94"
                 fresco:roundAsCircle="true"
                 fresco:roundingBorderWidth="2dp"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_gravity="center|start"
                 />
-            <LinearLayout
+
+            <RelativeLayout
+                android:layout_marginLeft="105dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -47,18 +45,39 @@
                      />
 
                 <smartAmigos.com.nammakarnataka.fonts.description_font_light
+                    android:layout_below="@+id/place_list_placename"
                     android:id="@+id/place_list_districtname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
+                    android:padding="8dp"
                     android:textColor="@color/colorSecondaryText"
                     android:text="district"
                     />
-            </LinearLayout>
+
+            </RelativeLayout>
 
 
-        </LinearLayout>
+            <smartAmigos.com.nammakarnataka.fonts.titles_font
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="14dp"
+                android:layout_marginBottom="24dp"
+                android:textColor="@color/colorSecondaryText"
+                android:textSize="12sp"
+                android:id="@+id/place_list_rating_value"
+                android:layout_gravity="bottom|end"
+                />
+            <RatingBar
+                android:isIndicator="true"
+                android:id="@+id/place_list_ratingsbar"
+                android:layout_marginRight="12dp"
+                android:layout_marginBottom="12dp"
+                android:numStars = "5"
+                android:layout_gravity="bottom|end"
+                style = "?android:attr/ratingBarStyleSmall"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content" />
 
     </android.support.v7.widget.CardView>
 
-</LinearLayout>
+</RelativeLayout>

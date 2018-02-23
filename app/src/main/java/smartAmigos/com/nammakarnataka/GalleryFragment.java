@@ -77,7 +77,7 @@ public class GalleryFragment extends Fragment implements com.facebook.common.dis
 
 
     private void showAd() {
-        if(Math.random() > 0.9) {
+        if(Math.random() > 0.25) {
                 AdRequest adreq = new AdRequest.Builder().build();
                 interstitial = new InterstitialAd(getActivity().getApplicationContext());
                 interstitial.setAdUnitId(getString(R.string.admob_interstitial_id));

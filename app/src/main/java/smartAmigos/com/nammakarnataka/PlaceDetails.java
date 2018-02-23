@@ -31,6 +31,9 @@ import android.widget.TextView;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,6 +90,7 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
 
         populateData();
 
+        showAd();
         return view;
     }
 
@@ -169,6 +173,30 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
     }
 
 
+
+    private void showAd() {
+        if(Math.random() > 0.9) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    AdRequest adreq = new AdRequest.Builder().build();
+                    final InterstitialAd interstitial = new InterstitialAd(context.getApplicationContext());
+                    interstitial.setAdUnitId(getString(R.string.admob_interstitial_id));
+                    interstitial.loadAd(adreq);
+                    interstitial.setAdListener(new AdListener() {
+                        public void onAdLoaded() {
+
+                            if (interstitial.isLoaded()) {
+                                interstitial.show();
+                            }
+                        }
+                    });
+                }
+            }, 1000);
+        }
+    }
+
+
     @Override
     public void onClick(View view) {
         BackendHelper.user_log user_log;
@@ -206,12 +234,12 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.place_favourite_card:
-                    Snackbar.make(view, "Nice, added " + place_name + " to Favourites list", Snackbar.LENGTH_SHORT)
+                    Snackbar.make(view, "Nice, added " + place_name + " to Bucket List", Snackbar.LENGTH_SHORT)
                             .setAction("Action", null).show();
                     if(!helper.checkIfFavourited(place_id)) {
-                        helper.insertIntoFavourites(place_id);
+                        helper.insertIntoBucketList(place_id);
                         user_log = new BackendHelper.user_log();
-                        user_log.execute(context, "favourite", place_id, " ");
+                        user_log.execute(context, "bucketlist", place_id, " ");
                     }
                 break;
 

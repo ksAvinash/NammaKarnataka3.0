@@ -12,6 +12,18 @@
     android:background="@drawable/new_app_background"
     >
 
+
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/signup_animation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lottie_loop="true"
+        app:lottie_autoPlay="true"
+        android:layout_gravity="center"
+        />
+
+
     <ScrollView
         android:scrollbars="none"
         android:layout_width="match_parent"
@@ -87,21 +99,6 @@
                 android:layout_height="1dp"
                 android:background="@color/colorDividerColor" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/signup_phoneno"
-                android:drawablePadding="16dp"
-                android:padding="16dp"
-                android:hint="phone number"
-                android:textColorHint="@color/colorWhite"
-                android:background="@android:color/transparent"
-                android:layout_marginTop="4dp"
-                android:drawableLeft="@drawable/signup_phoneno"
-                android:drawableTint="#fff"
-                tools:targetApi="m" />
 
             <View
                 android:layout_width="match_parent"
