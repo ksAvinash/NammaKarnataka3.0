@@ -15,8 +15,10 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import smartAmigos.com.nammakarnataka.GoogleSigninActivity;
+import smartAmigos.com.nammakarnataka.PlaceDetails;
 import smartAmigos.com.nammakarnataka.R;
 import smartAmigos.com.nammakarnataka.SignupActivity;
 
@@ -795,6 +797,85 @@ public class BackendHelper {
             } catch (Exception e) {
                 Log.d("NK_BACKEND : PLACES :", "Error updating firebase-id");
                 Log.d("NK_BACKEND : PLACES :", e.toString());
+            }
+
+            return null;
+        }
+    }
+
+
+
+    public static class fetch_gallery_images extends AsyncTask<Object, String, String>{
+        @Override
+        protected void onPostExecute(String str) {
+            super.onPostExecute(str);
+
+
+            if(str!=null){
+                try {
+                    JSONObject object = new JSONObject(str);
+                    boolean response = object.getBoolean("fetch_images");
+                    if(response){
+
+                        JSONObject data = object.getJSONObject("data");
+                        int url_count = data.getInt("Count");
+                        JSONArray Items = data.getJSONArray("Items");
+
+                        for(int i=0;i<url_count;i++){
+                            JSONObject item = Items.getJSONObject(i);
+                            if(item.getBoolean("valid")){
+                                PlaceDetails.addToAdapter(item.getString("s3_url"), item.getString("description"));
+                            }else{
+                                Log.d("NK_BACKEND : IMAGES : ", "INVALID IMAGE");
+                            }
+                        }
+
+                        PlaceDetails.displayImages();
+
+
+                    }else{
+                        Log.d("NK_BACKEND : IMAGES : ", "Error fetching images by place_id");
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            int place_id = (int)objects[0];
+            Context context = (Context) objects[1];
+
+            try{
+                URL url = new URL(context.getResources().getString(R.string.get_images_by_place_id));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                JSONObject jsonParam = new JSONObject();
+                jsonParam.put("place_id", place_id);
+
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonParam.toString());
+                os.flush();
+                BufferedReader serverAnswer = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                String response = serverAnswer.readLine();
+                Log.d("NK_BACKEND : IMAGES : ", "RESPONSE : "+response);
+
+                os.close();
+                conn.disconnect();
+
+                return response;
+            }catch (Exception e){
+                Log.d("NK_BACKEND : IMAGES : ", "Error fetching images by place_id");
+                Log.d("NK_BACKEND : IMAGES : ", e.toString());
             }
 
             return null;

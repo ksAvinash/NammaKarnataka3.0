@@ -6,51 +6,39 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
-import android.util.Log;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.core.ImagePipeline;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import smartAmigos.com.nammakarnataka.helper.BackendHelper;
 import smartAmigos.com.nammakarnataka.helper.CircleProgressBarDrawable;
+import smartAmigos.com.nammakarnataka.helper.GalleryAdapter;
+import smartAmigos.com.nammakarnataka.helper.RecyclerItemClickListener;
 import smartAmigos.com.nammakarnataka.helper.SQLiteDatabaseHelper;
-import smartAmigos.com.nammakarnataka.helper.place_images_metadata;
+import smartAmigos.com.nammakarnataka.helper.gallery_adapter;
 
 
 /**
@@ -65,7 +53,7 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
 
     View view;
     int place_id, averageTime;
-    Context context;
+    static Context context;
     SimpleDraweeView place_image;
     SQLiteDatabaseHelper helper;
     TextView placename_textView, description_textView, bestSeason_textView,
@@ -81,16 +69,22 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
     RatingBar suggestRatingsBar;
 
 
+    static RecyclerView mRecyclerView;
+    static ArrayList<gallery_adapter> galleryAdapter = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_place_details, container, false);
+        context = getActivity();
+
+        galleryAdapter.clear();
+
         initializeViews();
 
         populateData();
 
-        showAd();
+        //showAd();
         return view;
     }
 
@@ -125,7 +119,44 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         Uri uri = Uri.parse(head_image);
         place_image.getHierarchy().setProgressBarImage(new CircleProgressBarDrawable(2));
         place_image.setImageURI(uri);
+
+
+        BackendHelper.fetch_gallery_images fetch_gallery_images = new BackendHelper.fetch_gallery_images();
+        fetch_gallery_images.execute(place_id, context);
+
+
     }
+
+
+
+    public static void addToAdapter(String url, String description){
+        galleryAdapter.add(new gallery_adapter(url, description) );
+    }
+
+
+    public static void displayImages(){
+        mRecyclerView.setLayoutManager(new GridLayoutManager(context, 5));
+        mRecyclerView.setHasFixedSize(true);
+        GalleryAdapter myAdapter = new GalleryAdapter(context, galleryAdapter);
+        mRecyclerView.setAdapter(myAdapter);
+
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(context,
+                new RecyclerItemClickListener.OnItemClickListener() {
+
+                    @Override
+                    public void onItemClick(View view, int position) {
+
+                        Intent intent = new Intent(context, DetailedImagesActivity.class);
+                        intent.putParcelableArrayListExtra("data", galleryAdapter);
+                        intent.putExtra("position", position);
+                        context.startActivity(intent);
+
+                    }
+                }));
+    }
+
+
+
 
     public void initializeViews() {
         context = getContext();
@@ -157,7 +188,7 @@ public class PlaceDetails extends Fragment implements View.OnClickListener {
         suggestRating_Cancel = view.findViewById(R.id.suggestRating_Cancel);
         suggestRating_Button = view.findViewById(R.id.suggestRating_Button);
         suggestRatingsBar = view.findViewById(R.id.suggestRatingsBar);
-
+        mRecyclerView = view.findViewById(R.id.place_imagesList);
 
         suggestAvgTimeSpent_Cancel.setOnClickListener(this);
         place_navigate_now.setOnClickListener(this);

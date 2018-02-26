@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         if(isNetworkConnected()){
-            showAd();
+            //showAd();
             FirebaseMessaging.getInstance().subscribeToTopic("nk_all_users");
         }
 

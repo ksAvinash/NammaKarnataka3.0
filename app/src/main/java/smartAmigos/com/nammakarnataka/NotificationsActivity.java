@@ -66,7 +66,7 @@ public class NotificationsActivity extends AppCompatActivity implements View.OnC
 
         populateData();
 
-        showAd();
+        //showAd();
     }
 
 

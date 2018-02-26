@@ -71,7 +71,7 @@ public class GalleryFragment extends Fragment implements com.facebook.common.dis
 
         initializeViews();
 
-        showAd();
+        //showAd();
         return view;
     }
 
@@ -182,20 +182,8 @@ public class GalleryFragment extends Fragment implements com.facebook.common.dis
 
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            progressDialog.setMessage("One sec, Searching relevant images..");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
         protected void onPostExecute(String str) {
             super.onPostExecute(str);
-
-            if(progressDialog.isShowing())
-                progressDialog.dismiss();
 
 
             if(str!=null){
